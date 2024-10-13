@@ -1,0 +1,9 @@
+path: data
+train: images/train 
+val: images/val 
+test: images/test 
+
+# Classes
+names:
+  0: cup
+  1: disc
