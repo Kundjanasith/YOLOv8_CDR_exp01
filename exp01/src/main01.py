@@ -46,10 +46,12 @@ def find_perpendicular_line(l1_start, l1_end, length=None):
     l2_end = midpoint + direction_l2
     return l2_start, l2_end
 
-file_o = open('results_test.csv','w')
-file_o.write('file_name,l1,l2\n')
+# file_o = open('results_test.csv','w')
+# file_o.write('file_name,l1,l2\n')
 model = YOLO('../../model/train/weights/best.pt') 
-for input_image_path in tqdm.tqdm(glob.glob('../../../data/SI/test_si/*.jpg')):
+input_paths = glob.glob('../../../data/SI/test_si/*.jpg')
+input_paths.sort()
+for input_image_path in tqdm.tqdm(input_paths):
     results = model(input_image_path,conf=0.001,iou=0.8)
     cup_arr = []
     dis_arr = []
@@ -100,8 +102,8 @@ for input_image_path in tqdm.tqdm(glob.glob('../../../data/SI/test_si/*.jpg')):
         dis_arr = polygon_to_ellipse(dis_arr)
     cv2.polylines(image_rgb_predict , cup_arr, isClosed=True, color=(255, 0, 0), thickness=20)
     cv2.polylines(image_rgb_predict , dis_arr, isClosed=True, color=(0, 255, 0), thickness=20)
-    # axs[0].imshow(image_rgb_predict)
-    # axs[0].axis('off')
+    axs[0].imshow(image_rgb_predict)
+    axs[0].axis('off')
     image_rgb_predict = image_rgb.copy()
     crop_arr = []
     x_crop_arr = []
@@ -135,14 +137,14 @@ for input_image_path in tqdm.tqdm(glob.glob('../../../data/SI/test_si/*.jpg')):
     YcropMin, YcropMax = np.min(y_crop_arr), np.max(y_crop_arr)
     image_rgb_predict = draw_dashed_line(image_rgb_predict, l2start, l2end, (0, 100, 200), 5, dash_length=1)
     cropped_image = image_rgb_predict[YcropMin-10:YcropMax+10, XcropMin-10:XcropMax+10, :]
-    # axs[1].imshow(cropped_image)
-    # axs[1].axis('off')
-    # plt.savefig('main01.png',bbox_inches='tight')
+    axs[1].imshow(cropped_image)
+    axs[1].axis('off')
+    plt.savefig('main01.png',bbox_inches='tight')
     # print(input_image_path)
     input_image_path = input_image_path.replace('../../../data/SI/','figs/')
     l1 = calculate_distance(start_point, end_point)
     l2 = calculate_distance(l2start, l2end)
-    file_o.write('%s,%f,%f\n'%(input_image_path,l1,l2))
-    # plt.savefig(input_image_path,bbox_inches='tight')
-    # break
+    # file_o.write('%s,%f,%f\n'%(input_image_path,l1,l2))
+    plt.savefig(input_image_path,bbox_inches='tight')
+    break
 print("OK")
