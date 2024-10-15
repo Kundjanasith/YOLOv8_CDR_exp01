@@ -28,7 +28,7 @@ df_test_right = df_test[df_test['left_right']=='RIGHT']
 plt.bar([0],[len(df_test_left)])
 plt.bar([1],[len(df_test_right)])
 plt.xticks([0,1],['LEFT','RIGHT'])
-plt.ylabel('Number of samples')
+plt.ylabel('Testing\nNumber of samples')
 
 
 plt.subplot(212)
@@ -41,6 +41,6 @@ df_val_right = df_val[df_val['left_right']=='RIGHT']
 plt.bar([0],[len(df_val_left)])
 plt.bar([1],[len(df_val_right)])
 plt.xticks([0,1],['LEFT','RIGHT'])
-plt.ylabel('Number of samples')
+plt.ylabel('Validation\nNumber of samples')
 
 plt.savefig('analyze_main01.png',bbox_inches='tight')
