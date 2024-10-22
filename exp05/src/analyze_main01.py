@@ -22,15 +22,15 @@ plt.figure(figsize=(10,5))
 plt.subplot(211)
 plt.ylabel('Testing\nFrequency')
 # plt.bar(range(len(df_test)),df_test['l1']/df_test['l2'])
-plt.hist(df_test['STSN_area']-df_test['ITIN_area'],bins=300)
+plt.hist(df_test['STSN_ITIN_area']-df_test['TSTI_NSNI_area'],bins=300)
 
 
 
 plt.subplot(212)
 plt.ylabel('Validation\nFrequency')
 # plt.bar(range(len(df_test)),df_test['l1']/df_test['l2'])
-plt.hist(df_val['STSN_area']-df_val['ITIN_area'],bins=300)
-plt.xlabel('STSN area - ITIN area')
+plt.hist(df_val['STSN_ITIN_area']-df_val['TSTI_NSNI_area'],bins=300)
+plt.xlabel('STSN_ITIN area - TSTI_NSNI area')
 
 
 plt.savefig('analyze_main01.png',bbox_inches='tight')

@@ -132,10 +132,10 @@ def find_perpendicular_line(l1_start, l1_end, length=None):
     l2_end = midpoint + direction_l2
     return l2_start, l2_end
 
-file_o = open('results_test.csv','w')
-file_o.write('file_name,STSN_area,ITIN_area\n')
+file_o = open('results_val.csv','w')
+file_o.write('file_name,STSN_ITIN_area,TSTI_NSNI_area\n')
 model = YOLO('../../model/train/weights/best.pt') 
-input_paths = glob.glob('../../../data/SI/test_si/*.jpg')
+input_paths = glob.glob('../../../data/SI/val_si/*.jpg')
 input_paths.sort()
 for input_image_path in tqdm.tqdm(input_paths):
     results = model(input_image_path,conf=0.001,iou=0.8)
@@ -239,8 +239,8 @@ for input_image_path in tqdm.tqdm(input_paths):
     secs = divide_polygon_into_sections1(dis_arr.reshape(dis_arr.shape[1],dis_arr.shape[2]))
     tem_arr = ['NI','IN','IT','TI','TS','ST','SN','NS']
     tem_dict = {}
-    abl_area = []
-    efg_area = []
+    stsn_itin_area = []
+    tsts_nsni_area = []
     for tem in range(360):
         if tem % 45 == 0:
             cv2.line(image_rgb_predict, (int(secs[tem].coords[0][0]), int(secs[tem].coords[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (100, 100, 100), 1)
@@ -254,14 +254,20 @@ for input_image_path in tqdm.tqdm(input_paths):
         inner_x = find_first_two_intersections([(int(secs[tem].coords[0][0]), int(secs[tem].coords[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))], cup_arr)
         if len(inner_x) == 0:
             continue
-        if tem >= 225 and tem <= 315: #abl
-            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (0, 0, 255), 1)
-            abl_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
-        if tem >= 45 and tem <= 135: #efg
-            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (0, 0, 255), 1)
-            efg_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
-    ABL_area = np.sum(abl_area)
-    EFG_area = np.sum(efg_area)
+        if tem > 225 and tem < 315: #stsn
+            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (31, 119, 180), 1)
+            stsn_itin_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
+        if tem > 45 and tem < 135: #itin
+            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (31, 119, 180), 1)
+            stsn_itin_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
+        if tem > 135 and tem < 225 : #itin
+            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (44, 160, 44), 1)
+            tsts_nsni_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
+        if tem > 315 or tem < 45 : #itin
+            cv2.line(image_rgb_predict, (int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1])), (44, 160, 44), 1)
+            tsts_nsni_area.append(calculate_distance((int(inner_x[0][0]), int(inner_x[0][1])), (int(secs[tem].coords[1][0]), int(secs[tem].coords[1][1]))))
+    ABL_area = np.sum(stsn_itin_area)
+    EFG_area = np.sum(tsts_nsni_area)
     # print(AB_area,EF_area)
     # sys.exit()
     cropped_image = image_rgb_predict[YcropMin-10:YcropMax+10, XcropMin-10:XcropMax+10, :]
